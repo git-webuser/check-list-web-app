@@ -1,0 +1,588 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background: white;
+    overflow-x: hidden; /* Убираем горизонтальный скролл */
+    min-width: 320px; /* Минимальная ширина страницы */
+}
+
+#header {
+    font-size: 24px;
+    font-weight: bold;
+    padding: 20px;
+    background: white;
+    border-bottom: 1px solid #ddd;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    max-width: 100%;
+    overflow: hidden;
+    min-width: 0;
+}
+
+#header-content {
+    width: 100%; /* Заголовок занимает всю ширину */
+    padding: 5px;
+    margin-left: 0;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+#header.placeholder {
+    color: #aaa;
+}
+
+#header-text {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0; /* Убираем минимальную ширину */
+    padding-left: 0;
+    margin-left: 0;
+}
+
+#header-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 0; /* Убираем отступ сверху */
+    flex-wrap: nowrap; /* Не разрешаем перенос кнопок */
+}
+
+.header-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-width: 0; /* Убираем минимальную ширину */
+}
+
+.header-button svg {
+    width: 20px;
+    height: 20px;
+    fill: #007bff;
+}
+
+.header-button:hover svg {
+    fill: #0056b3;
+}
+
+.button-text {
+    font-size: 16px;
+    color: #007bff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100px;
+}
+
+.header-button:hover .button-text {
+    color: #0056b3;
+}
+
+#checklist-container {
+    max-width: 1024px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 20px;
+    flex: 1;
+    overflow-y: auto;
+    background: white;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.proto-item {
+    display: flex;
+    flex-direction: column;
+    border-bottom: 1px solid #eee;
+    min-width: 0; /* Убираем минимальную ширину */
+}
+
+.item, .sub-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    cursor: grab;
+    position: relative;
+    min-width: 0; /* Убираем минимальную ширину */
+}
+
+.item.dragging, .sub-item.dragging {
+    opacity: 0.5;
+}
+
+.item.dragging .controls, .sub-item.dragging .controls {
+    opacity: 0; /* Скрываем контролы при перетаскивании */
+}
+
+.item:has(.drop-indicator[style*="display: block"]), 
+.sub-item:has(.drop-indicator[style*="display: block"]) {
+    background-color: rgba(0, 123, 255, 0.05); /* Подсветка зоны вставки */
+}
+
+.item .drop-indicator, .sub-item .drop-indicator {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #007bff;
+    display: none;
+}
+
+.item .drop-indicator.top, .sub-item .drop-indicator.top {
+    top: -1px;
+}
+
+.item .drop-indicator.bottom, .sub-item .drop-indicator.bottom {
+    bottom: -1px;
+}
+
+.item .text, .sub-item .text {
+    flex: 1;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 5px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-wrap: break-word; /* Добавить */
+    overflow: hidden;
+    max-width: calc(100% - 60px);
+    color: #000;
+    min-width: 0;
+}
+
+.item .text.placeholder, .sub-item .text.placeholder {
+    color: #aaa;
+}
+
+.item .controls, .sub-item .controls {
+    display: flex;
+    gap: 5px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    min-width: 0; /* Убираем минимальную ширину */
+}
+
+.item:hover .controls, .sub-item:hover .controls {
+    opacity: 1;
+}
+
+.item .controls button, .sub-item .controls button {
+    background: none;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    padding: 5px;
+    min-width: 0; /* Убираем минимальную ширину */
+}
+
+.item .controls button:hover, .sub-item .controls button:hover {
+    color: #333;
+}
+
+.item .controls svg, .sub-item .controls svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+}
+
+.sub-item {
+    margin-left: 30px;
+}
+
+input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    margin: 3px 3px 3px 4px;
+}
+
+input[type="checkbox"]:indeterminate {
+    background-color: #ccccff;
+    border-color: #007bff;
+}
+
+input[type="checkbox"]:checked + .text {
+    text-decoration: line-through;
+    color: #777;
+}
+
+input[type="checkbox"]:indeterminate + .text {
+    color: #777;
+}
+
+.plus-icon {
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 3px 3px 3px 4px;
+}
+
+.plus-icon svg {
+    width: 100%;
+    height: 100%;
+    fill: #007bff;
+}
+
+.material-icons-sharp {
+    font-family: 'Material Icons Sharp';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 20px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-smoothing: antialiased;
+    color: #007bff;
+}
+
+.material-icons-sharp:hover {
+    color: #0056b3;
+}
+
+.edit-input {
+    width: 100%;
+    font-size: 16px;
+    padding: 5px;
+    box-sizing: border-box;
+    resize: none;
+    overflow: hidden;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    max-height: 150px;
+    min-height: 20px;
+    color: #007bff;
+    caret-color: #007bff;
+}
+
+.edit-input::placeholder {
+    color: #aaa;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    max-width: 90%;
+    word-wrap: break-word;
+}
+
+.modal-content button {
+    margin: 10px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.modal-content button.save {
+    background: #007bff;
+    color: white;
+}
+
+.modal-content button.discard {
+    background: #dc3545;
+    color: white;
+}
+
+#loading-indicator {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.notification {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background-color: #4CAF50;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    transition: transform 0.3s ease-out;
+    text-align: center;
+    max-width: 90%;
+}
+
+.notification.show {
+    transform: translateX(-50%) translateY(0);
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.item, .sub-item {
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.item:active, .sub-item:active {
+    transform: scale(0.99);
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@media print {
+    .input-area {
+        display: none;
+    }
+    .item .controls, .sub-item .controls {
+        display: none;
+    }
+    .item input[type="checkbox"], .sub-item input[type="checkbox"] {
+        display: none;
+    }
+    .item::before, .sub-item::before {
+        content: "☐";
+        margin-right: 10px;
+    }
+    .item .text, .sub-item .text {
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        max-width: 100%;
+    }
+}
+
+/* Убираем черную рамку при редактировании */
+[contenteditable="true"] {
+    outline: none;
+    color: #000;
+    caret-color: #007bff;
+}
+
+/* Стилизация скролла */
+#checklist-container::-webkit-scrollbar {
+    width: 8px; /* Тонкий скролл */
+}
+
+#checklist-container::-webkit-scrollbar-track {
+    background: #f5f5f5; /* Дорожка скролла */
+    border-radius: 4px;
+}
+
+#checklist-container::-webkit-scrollbar-thumb {
+    background: #007bff; /* Ползунок скролла */
+    border-radius: 4px;
+}
+
+#checklist-container::-webkit-scrollbar-thumb:hover {
+    background: #0056b3; /* Ползунок при наведении */
+}
+
+.item:focus, .sub-item:focus, #header:focus {
+    outline: 2px solid #007bff;
+    outline-offset: 2px;
+}
+
+input[type="checkbox"]:focus {
+    outline: 2px solid #007bff;
+    outline-offset: 1px;
+}
+
+.controls button:focus, .header-button:focus {
+    outline: 2px solid #007bff;
+    outline-offset: 1px;
+}
+
+/* Адаптив для экранов от 375px до 1920px */
+@media (max-width: 1920px) {
+    #header {
+        font-size: 24px;
+        padding: 20px;
+        padding-left: 15px;
+    }
+
+    #header-buttons {
+        gap: 10px;
+    }
+
+    .header-button svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    .button-text {
+        font-size: 16px;
+    }
+
+    #checklist-container {
+        padding: 20px;
+    }
+
+    .item, .sub-item {
+        padding: 10px;
+        padding-left: 15px;
+    }
+
+    .item .text, .sub-item .text {
+        font-size: 16px;
+    }
+
+    .item .controls button, .sub-item .controls button {
+        padding: 5px;
+    }
+
+    .item .controls svg, .sub-item .controls svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    .sub-item {
+        margin-left: 30px;
+    }
+}
+
+@media (max-width: 768px) {
+    #header {
+        font-size: 20px;
+        padding: 15px;
+        flex-direction: row;
+    }
+
+    #header-buttons {
+        gap: 5px;
+        margin-top: 10px;
+    }
+
+    .header-button svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    .button-text {
+        font-size: 16px;
+    }
+
+    #checklist-container {
+        padding: 15px;
+    }
+
+    .item, .sub-item {
+        padding: 8px;
+    }
+
+    .item .text, .sub-item .text {
+        font-size: 16px;
+    }
+
+    .item .controls button, .sub-item .controls button {
+        padding: 3px;
+    }
+
+    .item .controls svg, .sub-item .controls svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    .sub-item {
+        margin-left: 20px;
+    }
+}
+
+@media (max-width: 375px) {
+    #header {
+        flex-direction: row;
+        font-size: 18px;
+        padding: 10px;
+    }
+
+    #header-content {
+        max-width: 60%; /* Меньше места под заголовок */
+    }
+
+    #header-buttons {
+        gap: 6px;
+    }
+
+    .header-button svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    .button-text {
+        display: none;
+    }
+
+    .header-button {
+        padding: 5px;
+    }
+
+    #checklist-container {
+        padding: 10px;
+        overflow-x: hidden;
+    }
+
+    .item, .sub-item {
+        padding: 5px;
+    }
+
+    .item .text, .sub-item .text {
+        font-size: 16px;
+        max-width: calc(100% - 40px);
+    }
+
+    .item .controls button, .sub-item .controls button {
+        padding: 2px;
+    }
+
+    .item .controls svg, .sub-item .controls svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    .sub-item {
+        margin-left: 15px;
+    }
+}

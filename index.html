@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Интерактивный чек-лист для организации задач">
+    <meta name="theme-color" content="#007bff">
+    <title>Чек-лист</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Добавляем иконку для браузера -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23007bff' d='M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17l-5-5 1.4-1.4L9 14.2l9.6-9.6L20 6z'/%3E%3C/svg%3E" type="image/svg+xml">
+</head>
+<body>
+    <div id="header" class="placeholder" ondblclick="editHeader()" tabindex="0" role="button" aria-label="Редактировать заголовок чек-листа">
+        <div id="header-content">
+            <span id="header-text">Мой Чек-лист</span>
+        </div>
+        <div id="header-buttons">
+            <button class="header-button" onclick="saveToFile()" title="Сохранить" aria-label="Сохранить чек-лист">
+                <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#e3e3e3">
+                    <path d="m732-120 144-144-51-51-57 57v-150h-72v150l-57-57-51 51 144 144ZM588 0v-72h288V0H588ZM264-144q-29 0-50.5-21.5T192-216v-576q0-29 21.5-50.5T264-864h312l192 192v192h-72v-144H528v-168H264v576h264v72H264Zm0-72v-576 576Z"/>
+                </svg>
+                <span class="button-text">Сохранить</span>
+            </button>
+            <input type="file" id="file-input" style="display: none;" onchange="loadFromFile(event)" accept=".json">
+            <button class="header-button" onclick="document.getElementById('file-input').click()" title="Загрузить" aria-label="Загрузить чек-лист">
+                <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#e3e3e3">
+                    <path d="M444-240h72v-150l57 57 51-51-144-144-144 144 51 51 57-57v150ZM263.72-96Q234-96 213-117.15T192-168v-624q0-29.7 21.15-50.85Q234.3-864 264-864h312l192 192v504q0 29.7-21.16 50.85Q725.68-96 695.96-96H263.72ZM528-624v-168H264v624h432v-456H528ZM264-792v189-189 624-624Z"/>
+                </svg>
+                <span class="button-text">Загрузить</span>
+            </button>
+            <button class="header-button" onclick="openPageInNewWindow()" title="В окне" aria-label="Открыть в отдельном окне">
+                <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#e3e3e3">
+                    <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H560v-80h280v280h-80v-144L388-332Z"/>
+                </svg>
+                <span class="button-text">В окне</span>
+            </button>
+        </div>
+    </div>
+    <div id="checklist-container">
+        <div id="checklist-items" role="region" aria-label="Список задач"></div>
+    </div>
+    
+    <!-- Добавляем контейнер для уведомлений -->
+    <div id="notification-container" aria-live="polite"></div>
+    
+    <!-- Индикатор загрузки -->
+    <div id="loading-indicator" aria-hidden="true">
+        <div class="spinner"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
