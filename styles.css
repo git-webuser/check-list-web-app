@@ -13,27 +13,30 @@ body {
 #header {
     font-size: 24px;
     font-weight: bold;
-    padding: 20px;
+    padding: 15px;
     background: white;
     border-bottom: 1px solid #ddd;
     cursor: pointer;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
+    flex-wrap: nowrap; /* Предотвращаем перенос элементов */
     gap: 10px;
     max-width: 100%;
     overflow: hidden;
     min-width: 0;
 }
 
+
 #header-content {
-    width: 100%; /* Заголовок занимает всю ширину */
+    width: auto; /* Вместо 100% */
+    flex: 1; /* Занимает доступное пространство */
     padding: 5px;
     margin-left: 0;
     display: flex;
     justify-content: flex-start;
     align-items: center;
+    overflow: hidden; /* Предотвращаем выход за границы */
 }
 
 #header.placeholder {
@@ -48,13 +51,15 @@ body {
     min-width: 0; /* Убираем минимальную ширину */
     padding-left: 0;
     margin-left: 0;
+    max-width: 100%; /* Ограничиваем максимальную ширину */
 }
 
 #header-buttons {
     display: flex;
     gap: 10px;
-    margin-top: 0; /* Убираем отступ сверху */
-    flex-wrap: nowrap; /* Не разрешаем перенос кнопок */
+    margin-top: 0;
+    flex-wrap: nowrap;
+    flex-shrink: 0; /* Запрещаем сжатие блока с кнопками */
 }
 
 .header-button {
@@ -487,22 +492,28 @@ input[type="checkbox"]:focus {
 @media (max-width: 768px) {
     #header {
         font-size: 20px;
-        padding: 15px;
+        padding: 10px;
         flex-direction: row;
+    }
+
+    #header-content {
+        max-width: 60%; /* Ограничиваем для маленьких экранов */
     }
 
     #header-buttons {
         gap: 5px;
-        margin-top: 10px;
+        margin-top: 0;
     }
 
     .header-button svg {
-        width: 16px;
-        height: 16px;
+        width: 20px;
+        height: 20px;
+        padding: 5px;
     }
 
     .button-text {
         font-size: 16px;
+        display: none;
     }
 
     #checklist-container {

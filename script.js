@@ -122,6 +122,12 @@ function updateParentCheckbox(index) {
 function editHeader() {
     const header = document.getElementById('header-text');
     header.setAttribute('contenteditable', 'true');
+    
+    // Временно убираем overflow: hidden и ellipsis при редактировании
+    header.style.overflow = 'visible';
+    header.style.textOverflow = 'clip';
+    header.style.whiteSpace = 'normal';
+    
     header.focus();
     
     // Выделяем весь текст при начале редактирования
@@ -143,6 +149,12 @@ function editHeader() {
 function saveHeader() {
     const header = document.getElementById('header-text');
     const text = header.innerText.trim();
+    
+    // Восстанавливаем первоначальные стили
+    header.style.overflow = '';
+    header.style.textOverflow = '';
+    header.style.whiteSpace = '';
+    
     if (text === '') {
         header.innerText = 'Мой Чек-лист'; // Возвращаем плейсхолдер, если текст пустой
         document.getElementById('header').classList.add('placeholder');
