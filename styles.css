@@ -72,6 +72,7 @@ body {
     justify-content: center;
     gap: 8px;
     min-width: 0; /* Убираем минимальную ширину */
+    border-radius: 2px;
 }
 
 .header-button svg {
@@ -193,6 +194,7 @@ body {
     cursor: pointer;
     padding: 5px;
     min-width: 0; /* Убираем минимальную ширину */
+    border-radius: 2px;
 }
 
 .item .controls button:hover, .sub-item .controls button:hover {
@@ -214,6 +216,7 @@ input[type="checkbox"] {
     height: 20px;
     cursor: pointer;
     margin: 3px 3px 3px 4px;
+    border-radius: 3px; /* Закругление самого чекбокса */
 }
 
 input[type="checkbox"]:indeterminate {
@@ -434,7 +437,40 @@ input[type="checkbox"]:indeterminate + .text {
 input[type="checkbox"]:focus {
     outline: 2px solid #007bff;
     outline-offset: 1px;
+    border-radius: 4px; /* Добавляем закругление для outline */
 }
+
+input[type="checkbox"].marked {
+    background-color: #ff3b30; /* Красный фон */
+    position: relative;
+    border-color: #ff3b30;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+
+input[type="checkbox"].marked::after {
+    content: '×';
+    position: absolute;
+    font-size: 18px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    line-height: 1;
+}
+
+input[type="checkbox"].marked + .text {
+    font-weight: bold;
+    color: #ff3b30; /* Красный цвет текста */
+    text-decoration: none; /* Убираем зачеркивание */
+}
+
+
 
 .controls button:focus, .header-button:focus {
     outline: 2px solid #007bff;

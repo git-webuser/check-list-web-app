@@ -110,13 +110,82 @@ function toggleCheck(index, isSubItem = false, parentIndex = null) {
     renderChecklist();
 }
 
+function handleRightClick(event, index, isSubItem = false, parentIndex = null) {
+    // Предотвращаем стандартное контекстное меню
+    event.preventDefault();
+    
+    const checkbox = event.target;
+    
+    // Если чекбокс уже отмечен крестиком, снимаем отметку
+    if (checkbox.classList.contains('marked')) {
+        checkbox.classList.remove('marked');
+        checkbox.checked = false;
+        
+        // Обновляем статус в данных
+        if (isSubItem) {
+            checklist[parentIndex].subItems[index].checked = false;
+            checklist[parentIndex].subItems[index].marked = false;
+        } else {
+            checklist[index].checked = false;
+            checklist[index].marked = false;
+            
+            // Снимаем отметку со всех подпунктов
+            if (checklist[index].subItems) {
+                checklist[index].subItems.forEach(subItem => {
+                    subItem.checked = false;
+                    subItem.marked = false;
+                });
+            }
+        }
+    } 
+    // Иначе отмечаем крестиком
+    else {
+        checkbox.classList.add('marked');
+        checkbox.checked = false; // Убираем стандартную галочку
+        
+        // Обновляем статус в данных
+        if (isSubItem) {
+            checklist[parentIndex].subItems[index].checked = false;
+            checklist[parentIndex].subItems[index].marked = true;
+        } else {
+            checklist[index].checked = false;
+            checklist[index].marked = true;
+            
+            // Отмечаем все подпункты
+            if (checklist[index].subItems) {
+                checklist[index].subItems.forEach(subItem => {
+                    subItem.checked = false;
+                    subItem.marked = true;
+                });
+            }
+        }
+    }
+    
+    isDirty = true;
+    renderChecklist();
+}
+
 function updateParentCheckbox(index) {
     const subItems = checklist[index].subItems;
     if (subItems.length === 0) return;
-    
-    const allChecked = subItems.every(subItem => subItem.checked);
-    const someChecked = subItems.some(subItem => subItem.checked);
-    checklist[index].checked = allChecked ? true : someChecked ? null : false;
+
+    const allChecked = subItems.every(subItem => subItem.checked && !subItem.marked);
+    const allMarked = subItems.every(subItem => subItem.marked);
+    const someChecked = subItems.some(subItem => subItem.checked || subItem.marked);
+
+    if (allMarked) {
+        checklist[index].checked = false;
+        checklist[index].marked = true;
+    } else if (allChecked) {
+        checklist[index].checked = true;
+        checklist[index].marked = false;
+    } else if (someChecked) {
+        checklist[index].checked = null;
+        checklist[index].marked = false;
+    } else {
+        checklist[index].checked = false;
+        checklist[index].marked = false;
+    }
 }
 
 function editHeader() {
@@ -247,7 +316,9 @@ function renderChecklist() {
             <div class="proto-item">
                 <div class="item" draggable="true" ondragstart="dragStart(event, ${index}, null, false)" ondragover="dragOver(event, ${index}, null, false)" ondragend="dragEnd(event)" ondrop="drop(event, ${index}, null, false)">
                     <div class="drop-indicator top"></div>
-                    <input type="checkbox" ${item.checked ? 'checked' : ''} onchange="toggleCheck(${index})">
+                    <input type="checkbox" ${item.checked ? 'checked' : ''} ${item.marked ? 'class="marked"' : ''} 
+                        onchange="toggleCheck(${index})" 
+                        oncontextmenu="handleRightClick(event, ${index})">
                     <div class="text ${!item.text ? 'placeholder' : ''}" ondblclick="editItemText(this, ${index})">${item.text || 'Новый пункт'}</div>
                     <div class="controls">
                         <button onclick="addSubItem(${index})" title="Добавить подпункт">
@@ -266,7 +337,9 @@ function renderChecklist() {
                     ${item.subItems.map((subItem, subIndex) => `
                         <div class="sub-item" draggable="true" ondragstart="dragStart(event, ${index}, ${subIndex}, true)" ondragover="dragOver(event, ${index}, ${subIndex}, true)" ondragend="dragEnd(event)" ondrop="drop(event, ${index}, ${subIndex}, true)">
                             <div class="drop-indicator top"></div>
-                            <input type="checkbox" ${subItem.checked ? 'checked' : ''} onchange="toggleCheck(${subIndex}, true, ${index})">
+                            <input type="checkbox" ${subItem.checked ? 'checked' : ''} ${subItem.marked ? 'class="marked"' : ''}
+                                onchange="toggleCheck(${subIndex}, true, ${index})" 
+                                oncontextmenu="handleRightClick(event, ${subIndex}, true, ${index})">
                             <div class="text ${!subItem.text ? 'placeholder' : ''}" ondblclick="editItemText(this, ${subIndex}, true, ${index})">${subItem.text || 'Новый подпункт'}</div>
                             <div class="controls">
                                 <button onclick="deleteSubItem(${index}, ${subIndex})" title="Удалить">
@@ -296,6 +369,30 @@ function renderChecklist() {
             </div>
         </div>
     `;
+}
+
+// Обновим функцию toggleCheck
+function toggleCheck(index, isSubItem = false, parentIndex = null) {
+    if (isSubItem) {
+        // Если чекбокс отмечен крестиком, снимаем отметку
+        if (checklist[parentIndex].subItems[index].marked) {
+            checklist[parentIndex].subItems[index].marked = false;
+        }
+        checklist[parentIndex].subItems[index].checked = !checklist[parentIndex].subItems[index].checked;
+        updateParentCheckbox(parentIndex);
+    } else {
+        // Если чекбокс отмечен крестиком, снимаем отметку
+        if (checklist[index].marked) {
+            checklist[index].marked = false;
+        }
+        checklist[index].checked = !checklist[index].checked;
+        checklist[index].subItems.forEach(subItem => {
+            subItem.marked = false;
+            subItem.checked = checklist[index].checked;
+        });
+    }
+    isDirty = true;
+    renderChecklist();
 }
 
 // Функция для добавления нового пункта
@@ -471,6 +568,21 @@ function showNotification(message) {
             document.body.removeChild(notification);
         }, 300);
     }, 3000);
+}
+
+function resetChecklist() {
+    if (confirm('Вы уверены, что хотите сбросить все отметки?')) {
+        checklist.forEach(item => {
+            item.checked = false;
+            item.marked = false;
+            item.subItems.forEach(subItem => {
+                subItem.checked = false;
+                subItem.marked = false;
+            });
+        });
+        isDirty = true;
+        renderChecklist();
+    }
 }
 
 function loadFromFile(event) {
