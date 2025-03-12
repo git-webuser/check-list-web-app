@@ -221,7 +221,7 @@ input[type="checkbox"] {
 }
 
 input[type="checkbox"]:indeterminate {
-    background-color: #ccccff;
+    background-color: rgba(0, 123, 255, 0.05);
     border-color: #007bff;
 }
 
@@ -528,7 +528,7 @@ input[type="checkbox"].marked + .text {
 }
 
 .custom-checkbox.indeterminate {
-    background-color: #ccccff;
+    background-color: rgba(0, 123, 255, 0.05);
     border-color: #007bff;
 }
 

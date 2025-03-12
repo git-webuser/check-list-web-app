@@ -318,7 +318,7 @@ function getCheckboxAria(item) {
 const checkboxIcons = {
     checked: `<svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#fff"><path d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"/></svg>`,
     marked: `<svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#fff"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>`,
-    indeterminate: `<svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#fff"><path d="M240-440v-80h480v80H240Z"/></svg>`
+    indeterminate: `<svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#007bff"><path d="M240-440v-80h480v80H240Z"/></svg>`
 };
 
 // Генератор HTML для кастомного чекбокса с встроенным SVG
