@@ -98,93 +98,89 @@ function deleteSubItem(parentIndex, subIndex) {
     }
 }
 
-function toggleCheck(index, isSubItem = false, parentIndex = null) {
-    if (isSubItem) {
-        checklist[parentIndex].subItems[index].checked = !checklist[parentIndex].subItems[index].checked;
-        updateParentCheckbox(parentIndex);
+function updateParentCheckbox(index) {
+    const subItems = checklist[index].subItems;
+    if (!subItems.length) return;
+
+    // Проверяем, все ли дочерние пункты отмечены как marked
+    const allMarked = subItems.length > 0 && subItems.every(sub => sub.marked);
+
+    // Проверяем, все ли дочерние пункты отмечены как checked (и не marked)
+    const allChecked = subItems.length > 0 && subItems.every(sub => sub.checked && !sub.marked);
+
+    // Проверяем, есть ли хотя бы один marked или checked
+    const anyMarked = subItems.some(sub => sub.marked);
+    const anyChecked = subItems.some(sub => sub.checked && !sub.marked);
+
+    if (allMarked) {
+        // Если все дочерние пункты marked, родительский тоже marked
+        checklist[index].marked = true;
+        checklist[index].checked = false;
+    } else if (allChecked) {
+        // Если все дочерние пункты checked, родительский тоже checked
+        checklist[index].checked = true;
+        checklist[index].marked = false;
+    } else if (anyMarked || anyChecked) {
+        // Если есть хотя бы один marked или checked, родительский становится indeterminate
+        checklist[index].checked = null;
+        checklist[index].marked = false;
     } else {
-        checklist[index].checked = !checklist[index].checked;
-        checklist[index].subItems.forEach(subItem => subItem.checked = checklist[index].checked);
+        // Иначе родительский пункт не отмечен
+        checklist[index].checked = false;
+        checklist[index].marked = false;
     }
+
     isDirty = true;
-    renderChecklist();
+    renderChecklist(); // Принудительно обновляем DOM
 }
 
 function handleRightClick(event, index, isSubItem = false, parentIndex = null) {
-    // Предотвращаем стандартное контекстное меню
     event.preventDefault();
-    
     const checkbox = event.target;
-    
-    // Если чекбокс уже отмечен крестиком, снимаем отметку
+
     if (checkbox.classList.contains('marked')) {
+        // Если уже marked, снимаем отметку
         checkbox.classList.remove('marked');
         checkbox.checked = false;
-        
-        // Обновляем статус в данных
+
         if (isSubItem) {
             checklist[parentIndex].subItems[index].checked = false;
             checklist[parentIndex].subItems[index].marked = false;
         } else {
             checklist[index].checked = false;
             checklist[index].marked = false;
-            
-            // Снимаем отметку со всех подпунктов
-            if (checklist[index].subItems) {
-                checklist[index].subItems.forEach(subItem => {
-                    subItem.checked = false;
-                    subItem.marked = false;
-                });
-            }
+            checklist[index].subItems.forEach(subItem => {
+                subItem.checked = false;
+                subItem.marked = false;
+            });
         }
-    } 
-    // Иначе отмечаем крестиком
-    else {
+    } else {
+        // Если не marked, отмечаем крестиком
         checkbox.classList.add('marked');
-        checkbox.checked = false; // Убираем стандартную галочку
-        
-        // Обновляем статус в данных
+        checkbox.checked = false;
+
         if (isSubItem) {
             checklist[parentIndex].subItems[index].checked = false;
             checklist[parentIndex].subItems[index].marked = true;
         } else {
             checklist[index].checked = false;
             checklist[index].marked = true;
-            
-            // Отмечаем все подпункты
-            if (checklist[index].subItems) {
-                checklist[index].subItems.forEach(subItem => {
-                    subItem.checked = false;
-                    subItem.marked = true;
-                });
-            }
+            checklist[index].subItems.forEach(subItem => {
+                subItem.checked = false;
+                subItem.marked = true;
+            });
         }
     }
-    
+
     isDirty = true;
-    renderChecklist();
-}
+    renderChecklist(); // Принудительно обновляем DOM
 
-function updateParentCheckbox(index) {
-    const subItems = checklist[index].subItems;
-    if (subItems.length === 0) return;
-
-    const allChecked = subItems.every(subItem => subItem.checked && !subItem.marked);
-    const allMarked = subItems.every(subItem => subItem.marked);
-    const someChecked = subItems.some(subItem => subItem.checked || subItem.marked);
-
-    if (allMarked) {
-        checklist[index].checked = false;
-        checklist[index].marked = true;
-    } else if (allChecked) {
-        checklist[index].checked = true;
-        checklist[index].marked = false;
-    } else if (someChecked) {
-        checklist[index].checked = null;
-        checklist[index].marked = false;
+    // Обновляем родительский пункт, если это подпункт
+    if (isSubItem) {
+        updateParentCheckbox(parentIndex);
     } else {
-        checklist[index].checked = false;
-        checklist[index].marked = false;
+        // Обновляем родительский пункт, даже если это не подпункт
+        updateParentCheckbox(index);
     }
 }
 
@@ -306,27 +302,55 @@ function saveItemText(element, index, isSubItem, parentIndex) {
     }
 }
 
+function getCheckboxState(item) {
+    if (item.marked) return 'marked';
+    if (item.checked === null) return 'indeterminate';
+    if (item.checked) return 'checked';
+    return '';
+}
+
+function getCheckboxAria(item) {
+    if (item.marked || item.checked === null) return 'mixed';
+    return item.checked ? 'true' : 'false';
+}
+
+// SVG-иконки для состояний чекбокса
+const checkboxIcons = {
+    checked: `<svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#fff"><path d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"/></svg>`,
+    marked: `<svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#fff"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>`,
+    indeterminate: `<svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#fff"><path d="M240-440v-80h480v80H240Z"/></svg>`
+};
+
+// Генератор HTML для кастомного чекбокса с встроенным SVG
+const checkboxHTML = (item, index, isSubItem = false, parentIndex = null) => {
+    const click = isSubItem ? `toggleCheck(${index}, true, ${parentIndex})` : `toggleCheck(${index})`;
+    const rclick = isSubItem ? `handleRightClick(event, ${index}, true, ${parentIndex})` : `handleRightClick(event, ${index})`;
+    const state = getCheckboxState(item);
+    const aria = getCheckboxAria(item);
+    const icon = checkboxIcons[state] || '';
+
+    return `<div class="custom-checkbox ${state}" tabindex="0" role="checkbox" aria-checked="${aria}"
+                onclick="${click}" oncontextmenu="${rclick}">${icon}</div>`;
+};
+
+// Переопределённый renderChecklist
 function renderChecklist() {
     const container = document.getElementById('checklist-items');
     container.innerHTML = '';
 
-    // Рендерим все элементы, кроме последнего (который будет "Новый пункт")
     checklist.slice(0, -1).forEach((item, index) => {
         container.innerHTML += `
             <div class="proto-item">
                 <div class="item" draggable="true" ondragstart="dragStart(event, ${index}, null, false)" ondragover="dragOver(event, ${index}, null, false)" ondragend="dragEnd(event)" ondrop="drop(event, ${index}, null, false)">
                     <div class="drop-indicator top"></div>
-                    <input type="checkbox" ${item.checked ? 'checked' : ''} ${item.marked ? 'class="marked"' : ''} 
-                        onchange="toggleCheck(${index})" 
-                        oncontextmenu="handleRightClick(event, ${index})">
+                    ${checkboxHTML(item, index)}
                     <div class="text ${!item.text ? 'placeholder' : ''}" ondblclick="editItemText(this, ${index})">${item.text || 'Новый пункт'}</div>
                     <div class="controls">
                         <button onclick="addSubItem(${index})" title="Добавить подпункт">
                             <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
                         </button>
                         <button onclick="deleteItem(${index})" title="Удалить">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#e3e3e3">
-                                <path d="M312-144q-29.7 0-50.85-21.15Q240-186.3 240-216v-480h-48v-72h192v-48h192v48h192v72h-48v479.57Q720-186 698.85-165T648-144H312Zm336-552H312v480h336v-480ZM384-288h72v-336h-72v336Zm120 0h72v-336h-72v336ZM312-696v480-480Z"/>
+                            <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#e3e3e3"><path d="m400-325 80-80 80 80 51-51-80-80 80-80-51-51-80 80-80-80-51 51 80 80-80 80 51 51Zm-88 181q-29.7 0-50.85-21.15Q240-186.3 240-216v-480h-48v-72h192v-48h192v48h192v72h-48v479.57Q720-186 698.85-165T648-144H312Zm336-552H312v480h336v-480Zm-336 0v480-480Z"/>
                             </svg>
                         </button>
                     </div>
@@ -337,14 +361,11 @@ function renderChecklist() {
                     ${item.subItems.map((subItem, subIndex) => `
                         <div class="sub-item" draggable="true" ondragstart="dragStart(event, ${index}, ${subIndex}, true)" ondragover="dragOver(event, ${index}, ${subIndex}, true)" ondragend="dragEnd(event)" ondrop="drop(event, ${index}, ${subIndex}, true)">
                             <div class="drop-indicator top"></div>
-                            <input type="checkbox" ${subItem.checked ? 'checked' : ''} ${subItem.marked ? 'class="marked"' : ''}
-                                onchange="toggleCheck(${subIndex}, true, ${index})" 
-                                oncontextmenu="handleRightClick(event, ${subIndex}, true, ${index})">
+                            ${checkboxHTML(subItem, subIndex, true, index)}
                             <div class="text ${!subItem.text ? 'placeholder' : ''}" ondblclick="editItemText(this, ${subIndex}, true, ${index})">${subItem.text || 'Новый подпункт'}</div>
                             <div class="controls">
                                 <button onclick="deleteSubItem(${index}, ${subIndex})" title="Удалить">
-                                    <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#e3e3e3">
-                                        <path d="M312-144q-29.7 0-50.85-21.15Q240-186.3 240-216v-480h-48v-72h192v-48h192v48h192v72h-48v479.57Q720-186 698.85-165T648-144H312Zm336-552H312v480h336v-480ZM384-288h72v-336h-72v336Zm120 0h72v-336h-72v336ZM312-696v480-480Z"/>
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#e3e3e3"><path d="m400-325 80-80 80 80 51-51-80-80 80-80-51-51-80 80-80-80-51 51 80 80-80 80 51 51Zm-88 181q-29.7 0-50.85-21.15Q240-186.3 240-216v-480h-48v-72h192v-48h192v48h192v72h-48v479.57Q720-186 698.85-165T648-144H312Zm336-552H312v480h336v-480Zm-336 0v480-480Z"/>
                                     </svg>
                                 </button>
                             </div>
@@ -357,7 +378,7 @@ function renderChecklist() {
         `;
     });
 
-    // Рендерим последний элемент ("Новый пункт") без возможности перетаскивания
+    // Новый пункт
     const lastItem = checklist[checklist.length - 1];
     container.innerHTML += `
         <div class="proto-item">
@@ -371,28 +392,24 @@ function renderChecklist() {
     `;
 }
 
-// Обновим функцию toggleCheck
 function toggleCheck(index, isSubItem = false, parentIndex = null) {
     if (isSubItem) {
-        // Если чекбокс отмечен крестиком, снимаем отметку
-        if (checklist[parentIndex].subItems[index].marked) {
-            checklist[parentIndex].subItems[index].marked = false;
-        }
+        // Если это подпункт, обновляем его состояние
         checklist[parentIndex].subItems[index].checked = !checklist[parentIndex].subItems[index].checked;
-        updateParentCheckbox(parentIndex);
+        checklist[parentIndex].subItems[index].marked = false; // Снимаем marked при toggle
+        updateParentCheckbox(parentIndex); // Обновляем родительский пункт
     } else {
-        // Если чекбокс отмечен крестиком, снимаем отметку
-        if (checklist[index].marked) {
-            checklist[index].marked = false;
-        }
+        // Если это родительский пункт, обновляем его состояние и всех его подпунктов
         checklist[index].checked = !checklist[index].checked;
+        checklist[index].marked = false; // Снимаем marked при toggle
         checklist[index].subItems.forEach(subItem => {
-            subItem.marked = false;
             subItem.checked = checklist[index].checked;
+            subItem.marked = false; // Снимаем marked у всех подпунктов
         });
+        updateParentCheckbox(index); // Обновляем родительский пункт
     }
     isDirty = true;
-    renderChecklist();
+    renderChecklist(); // Принудительно обновляем DOM
 }
 
 // Функция для добавления нового пункта
