@@ -299,6 +299,7 @@ input[type="checkbox"]:indeterminate + .text {
     background: rgba(0, 0, 0, 0.5);
     justify-content: center;
     align-items: center;
+    z-index: 1000;
 }
 
 .modal-content {
@@ -307,15 +308,52 @@ input[type="checkbox"]:indeterminate + .text {
     border-radius: 8px;
     text-align: center;
     max-width: 90%;
-    word-wrap: break-word;
+    width: 300px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
+/*
 .modal-content button {
     margin: 10px;
     padding: 10px 20px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
+}
+*/
+
+.modal-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    justify-content: center;
+}
+
+.modal-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    flex: 1;
+}
+
+.modal-button.confirm:hover {
+    background: #0056b3;
+}
+
+.modal-button.cancel {
+    background: #dc3545;
+    color: white;
+}
+
+.modal-button.cancel:hover {
+    background: #c82333;
+}
+
+.modal-button.confirm {
+    background: #007bff;
+    color: white;
 }
 
 .modal-content button.save {
@@ -619,6 +657,16 @@ input[type="checkbox"].marked + .text {
         display: none;
     }
 
+    .modal-content {
+        width: 90%;
+        padding: 15px;
+    }
+
+    .modal-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+
     #checklist-container {
         padding: 15px;
     }
@@ -642,6 +690,14 @@ input[type="checkbox"].marked + .text {
 
     .sub-item {
         margin-left: 20px;
+    }
+
+    .modal-buttons {
+        flex-direction: column;
+    }
+
+    .modal-button {
+        width: 100%;
     }
 }
 

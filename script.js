@@ -81,11 +81,28 @@ function addSubItem(index) {
     renderChecklist();
 }
 
+/*
 function deleteItem(index) {
     if (confirm('Вы уверены, что хотите удалить этот пункт?')) {
         checklist.splice(index, 1);
         isDirty = true;
         renderChecklist();
+    }
+}
+*/
+
+function deleteItem(index) {
+    // Сохраняем индекс для использования в обработчике
+    window.deleteIndex = index;
+    openModal('delete-modal');
+}
+
+function handleDeleteConfirm() {
+    if (window.deleteIndex !== undefined) {
+        checklist.splice(window.deleteIndex, 1);
+        isDirty = true;
+        renderChecklist();
+        closeModal('delete-modal');
     }
 }
 
@@ -138,50 +155,45 @@ function handleRightClick(event, index, isSubItem = false, parentIndex = null) {
     event.preventDefault();
     const checkbox = event.target;
 
-    if (checkbox.classList.contains('marked')) {
-        // Если уже marked, снимаем отметку
-        checkbox.classList.remove('marked');
-        checkbox.checked = false;
-
-        if (isSubItem) {
-            checklist[parentIndex].subItems[index].checked = false;
-            checklist[parentIndex].subItems[index].marked = false;
+    if (isSubItem) {
+        // Обработка подпунктов
+        const subItem = checklist[parentIndex].subItems[index];
+        if (subItem.marked) {
+            // Если уже marked, снимаем отметку
+            subItem.marked = false;
+            checkbox.classList.remove('marked');
         } else {
-            checklist[index].checked = false;
-            checklist[index].marked = false;
-            checklist[index].subItems.forEach(subItem => {
-                subItem.checked = false;
-                subItem.marked = false;
-            });
+            // Если не marked, отмечаем крестиком
+            subItem.marked = true;
+            subItem.checked = false; // Снимаем галочку, если она была
+            checkbox.classList.add('marked');
         }
+        updateParentCheckbox(parentIndex); // Обновляем родительский пункт
     } else {
-        // Если не marked, отмечаем крестиком
-        checkbox.classList.add('marked');
-        checkbox.checked = false;
-
-        if (isSubItem) {
-            checklist[parentIndex].subItems[index].checked = false;
-            checklist[parentIndex].subItems[index].marked = true;
+        // Обработка основных пунктов
+        const item = checklist[index];
+        if (item.marked) {
+            // Если уже marked, снимаем отметку
+            item.marked = false;
+            checkbox.classList.remove('marked');
+            item.subItems.forEach(subItem => {
+                subItem.marked = false; // Снимаем marked у всех подпунктов
+            });
         } else {
-            checklist[index].checked = false;
-            checklist[index].marked = true;
-            checklist[index].subItems.forEach(subItem => {
-                subItem.checked = false;
-                subItem.marked = true;
+            // Если не marked, отмечаем крестиком
+            item.marked = true;
+            item.checked = false; // Снимаем галочку, если она была
+            checkbox.classList.add('marked');
+            item.subItems.forEach(subItem => {
+                subItem.marked = true; // Отмечаем все подпункты как marked
+                subItem.checked = false; // Снимаем галочки у всех подпунктов
             });
         }
+        updateParentCheckbox(index); // Обновляем родительский пункт
     }
 
     isDirty = true;
     renderChecklist(); // Принудительно обновляем DOM
-
-    // Обновляем родительский пункт, если это подпункт
-    if (isSubItem) {
-        updateParentCheckbox(parentIndex);
-    } else {
-        // Обновляем родительский пункт, даже если это не подпункт
-        updateParentCheckbox(index);
-    }
 }
 
 function editHeader() {
@@ -511,7 +523,7 @@ function drop(event, targetIndex, targetSubIndex = null, isTargetSubItem = false
     else if (!isSubItem && isTargetSubItem) {
         // Нельзя превратить пункт с подпунктами в подпункт
         if (checklist[index].subItems.length > 0) {
-            alert('Нельзя превратить пункт с подпунктами в подпункт');
+            openModal('warning-modal');
             draggedItem = null;
             return;
         }
@@ -529,6 +541,20 @@ function drop(event, targetIndex, targetSubIndex = null, isTargetSubItem = false
     isDirty = true;
     renderChecklist();
     draggedItem = null;
+}
+
+function openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.style.display = 'flex';
+    }
+}
+
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.style.display = 'none';
+    }
 }
 
 function saveToLocalStorage() {

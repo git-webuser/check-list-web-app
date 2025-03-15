@@ -55,6 +55,27 @@
         <div class="spinner"></div>
     </div>
 
+    <!-- Модальное окно для подтверждения удаления -->
+<div id="delete-modal" class="modal">
+    <div class="modal-content">
+        <p>Вы уверены, что хотите удалить этот пункт?</p>
+        <div class="modal-buttons">
+            <button class="modal-button confirm" onclick="handleDeleteConfirm()">Удалить</button>
+            <button class="modal-button cancel" onclick="closeModal('delete-modal')">Отмена</button>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для предупреждения -->
+<div id="warning-modal" class="modal">
+    <div class="modal-content">
+        <p>Нельзя превратить пункт с подпунктами в подпункт.</p>
+        <div class="modal-buttons">
+            <button class="modal-button confirm" onclick="closeModal('warning-modal')">ОК</button>
+        </div>
+    </div>
+</div>
+
     <script src="script.js"></script>
 </body>
 </html>
