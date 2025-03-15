@@ -24,7 +24,7 @@ function openPageInNewWindow() {
         localStorage.setItem('popupOpened', 'true'); // Сохраняем флаг, что окно было открыто
         window.close();
     } else {
-        alert('Пожалуйста, разрешите открытие всплывающих окон для этого сайта.');
+        openModal('popup-blocked-modal'); // Заменяем alert на модальное окно
     }
 }
 
@@ -81,16 +81,6 @@ function addSubItem(index) {
     renderChecklist();
 }
 
-/*
-function deleteItem(index) {
-    if (confirm('Вы уверены, что хотите удалить этот пункт?')) {
-        checklist.splice(index, 1);
-        isDirty = true;
-        renderChecklist();
-    }
-}
-*/
-
 function deleteItem(index) {
     // Сохраняем индекс для использования в обработчике
     window.deleteIndex = index;
@@ -107,11 +97,19 @@ function handleDeleteConfirm() {
 }
 
 function deleteSubItem(parentIndex, subIndex) {
-    if (confirm('Вы уверены, что хотите удалить этот подпункт?')) {
-        checklist[parentIndex].subItems.splice(subIndex, 1);
-        updateParentCheckbox(parentIndex);
+    // Сохраняем индексы для использования в обработчике
+    window.deleteSubItemParentIndex = parentIndex;
+    window.deleteSubItemIndex = subIndex;
+    openModal('delete-subitem-modal');
+}
+
+function handleDeleteSubItemConfirm() {
+    if (window.deleteSubItemParentIndex !== undefined && window.deleteSubItemIndex !== undefined) {
+        checklist[window.deleteSubItemParentIndex].subItems.splice(window.deleteSubItemIndex, 1);
+        updateParentCheckbox(window.deleteSubItemParentIndex);
         isDirty = true;
         renderChecklist();
+        closeModal('delete-subitem-modal');
     }
 }
 
@@ -614,18 +612,21 @@ function showNotification(message) {
 }
 
 function resetChecklist() {
-    if (confirm('Вы уверены, что хотите сбросить все отметки?')) {
-        checklist.forEach(item => {
-            item.checked = false;
-            item.marked = false;
-            item.subItems.forEach(subItem => {
-                subItem.checked = false;
-                subItem.marked = false;
-            });
+    openModal('reset-modal'); // Вместо confirm используем модальное окно
+}
+
+function handleResetConfirm() {
+    checklist.forEach(item => {
+        item.checked = false;
+        item.marked = false;
+        item.subItems.forEach(subItem => {
+            subItem.checked = false;
+            subItem.marked = false;
         });
-        isDirty = true;
-        renderChecklist();
-    }
+    });
+    isDirty = true;
+    renderChecklist();
+    closeModal('reset-modal');
 }
 
 function loadFromFile(event) {
@@ -655,7 +656,7 @@ function loadFromFile(event) {
                 showNotification('Чек-лист загружен успешно!');
             } catch (e) {
                 console.error('Ошибка при чтении файла:', e);
-                alert('Ошибка при загрузке файла. Неверный формат.');
+                openModal('error-modal'); // Заменяем alert на модальное окно
             }
         };
         reader.readAsText(file);
