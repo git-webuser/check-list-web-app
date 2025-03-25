@@ -1,0 +1,129 @@
+/* Базовые стили */
+:root {
+    --primary-color: #007bff;
+    --primary-hover: #0056b3;
+    --danger-color: #dc3545;
+    --danger-hover: #c82333;
+    --success-color: #28a745;
+    --warning-color: #ffc107;
+    --info-color: #17a2b8;
+    --text-color: #212529;
+    --text-muted: #6c757d;
+    --border-color: #dee2e6;
+    --bg-color: #ffffff;
+    --bg-secondary: #f8f9fa;
+  }
+  
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, 
+                 Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.5;
+    overflow-x: hidden;
+    min-width: 320px;
+  }
+  
+  /* Общие стили для контейнеров */
+  .container {
+    width: 100%;
+    max-width: 1024px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+  
+  /* Стили для скролла */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: #f5f5f5;
+    border-radius: 4px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 4px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-hover);
+  }
+  
+  /* Утилитарные классы */
+  .text-center {
+    text-align: center;
+  }
+  
+  .text-muted {
+    color: var(--text-muted);
+  }
+  
+  .hidden {
+    display: none !important;
+  }
+  
+  /* Анимации */
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  .spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  
+  /* Стили для печати */
+  @media print {
+    .no-print {
+      display: none !important;
+    }
+  
+    body {
+      background: white;
+      color: black;
+      height: auto;
+    }
+  
+    .item__controls, 
+    .sub-item__controls,
+    .header__buttons {
+      display: none !important;
+    }
+  
+    .item__text,
+    .sub-item__text {
+      white-space: pre-wrap !important;
+      max-width: 100% !important;
+    }
+  }
+  
+  /* Адаптивные стили */
+  @media (max-width: 768px) {
+    .container {
+      padding: 0 15px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .container {
+      padding: 0 10px;
+    }
+  }

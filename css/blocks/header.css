@@ -1,0 +1,39 @@
+/* blocks/header.css */
+.header {
+    font-size: 24px;
+    font-weight: bold;
+    padding: 15px;
+    background: white;
+    border-bottom: 1px solid #ddd;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .header--placeholder {
+    color: #aaa;
+  }
+  
+  .header__content {
+    flex: 1;
+    padding: 5px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    overflow: hidden;
+  }
+  
+  .header__text {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .header__buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: nowrap;
+    flex-shrink: 0;
+  }

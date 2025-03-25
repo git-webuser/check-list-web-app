@@ -1,0 +1,47 @@
+.button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: 2px;
+  }
+  
+  .button:focus {
+    outline: 2px solid #007bff;
+    outline-offset: 1px;
+  }
+  
+  .button__icon {
+    width: 20px;
+    height: 20px;
+    fill: #007bff;
+  }
+  
+  .button__text {
+    font-size: 16px;
+    color: #007bff;
+    white-space: nowrap;
+  }
+  
+  .button:hover .button__icon,
+  .button:hover .button__text {
+    color: #0056b3;
+    fill: #0056b3;
+  }
+  
+  /* Модификаторы */
+  .button--header {
+    padding: 8px;
+  }
+  
+  .button--control {
+    color: #666;
+  }
+  
+  .button--control:hover {
+    color: #333;
+  }

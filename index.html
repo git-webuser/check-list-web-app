@@ -6,117 +6,110 @@
     <meta name="description" content="Интерактивный чек-лист для организации задач">
     <meta name="theme-color" content="#007bff">
     <title>Чек-лист</title>
-    <link rel="stylesheet" href="styles.css">
-    <!-- Добавляем иконку для браузера -->
+    
+    <!-- Подключение CSS -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/blocks/header.css">
+    <link rel="stylesheet" href="css/blocks/button.css">
+    <link rel="stylesheet" href="css/blocks/checkbox.css">
+    <link rel="stylesheet" href="css/blocks/item.css">
+    <link rel="stylesheet" href="css/blocks/modal.css">
+    <link rel="stylesheet" href="css/blocks/notification.css">
+    
+    <!-- Favicon -->
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23007bff' d='M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17l-5-5 1.4-1.4L9 14.2l9.6-9.6L20 6z'/%3E%3C/svg%3E" type="image/svg+xml">
 </head>
 <body>
-    <div id="header" class="placeholder" ondblclick="editHeader()" tabindex="0" role="button" aria-label="Редактировать заголовок чек-листа">
-        <div id="header-content">
-            <span id="header-text">Мой Чек-лист</span>
+    <!-- Шапка приложения -->
+    <header class="header header--placeholder" id="header">
+        <div class="header__content">
+            <h1 class="header__text" id="header-text">Мой Чек-лист</h1>
         </div>
-        <div id="header-buttons">
-            <input type="file" id="file-input" style="display: none;" onchange="loadFromFile(event)" accept=".json">
-            <button class="header-button" onclick="resetChecklist()" title="Сбросить" aria-label="Сбросить все отметки">
-                <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#007bff"><path d="M227-346q-16-30-25.5-63.5T192-480q0-121 85-206t209-82l-57-57 51-51 144 144-144 144-51-51 57-57q-94-2-158 62t-64 154q0 22 4 42t12 39l-53 53ZM480-84 336-228l144-144 51 51-57 57q94 2 158-62t64-154q0-22-4-42t-12-39l53-53q16 30 25.5 63.5T768-480q0 120-85 205.5T474-192l57 57-51 51Z"/>
+        <div class="header__buttons" id="header-buttons">
+            <button class="button button--header" data-action="reset" title="Сбросить" aria-label="Сбросить все отметки">
+                <svg class="button__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                    <path d="M227-346q-16-30-25.5-63.5T192-480q0-121 85-206t209-82l-57-57 51-51 144 144-144 144-51-51 57-57q-94-2-158 62t-64 154q0 22 4 42t12 39l-53 53ZM480-84 336-228l144-144 51 51-57 57q94 2 158-62t64-154q0 22-4 42t-12 39l53-53q16 30 25.5 63.5T768-480q0 120-85 205.5T474-192l57 57-51 51-224-224Z"/>
                 </svg>
-                <span class="button-text">Сбросить</span>
+                <span class="button__text">Сбросить</span>
             </button>
-            <button class="header-button" onclick="saveToFile()" title="Сохранить" aria-label="Сохранить чек-лист">
-                <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#e3e3e3">
+            <button class="button button--header" data-action="save" title="Сохранить" aria-label="Сохранить чек-лист">
+                <svg class="button__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
                     <path d="m732-120 144-144-51-51-57 57v-150h-72v150l-57-57-51 51 144 144ZM588 0v-72h288V0H588ZM264-144q-29 0-50.5-21.5T192-216v-576q0-29 21.5-50.5T264-864h312l192 192v192h-72v-144H528v-168H264v576h264v72H264Zm0-72v-576 576Z"/>
                 </svg>
-                <span class="button-text">Сохранить</span>
+                <span class="button__text">Сохранить</span>
             </button>
-            <button class="header-button" onclick="document.getElementById('file-input').click()" title="Загрузить" aria-label="Загрузить чек-лист">
-                <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#e3e3e3">
-                    <path d="M444-240h72v-150l57 57 51-51-144-144-144 144 51 51 57-57v150ZM263.72-96Q234-96 213-117.15T192-168v-624q0-29.7 21.15-50.85Q234.3-864 264-864h312l192 192v504q0 29.7-21.16 50.85Q725.68-96 695.96-96H263.72ZM528-624v-168H264v624h432v-456H528ZM264-792v189-189 624-624Z"/>
+            <button class="button button--header" data-action="load" title="Загрузить" aria-label="Загрузить чек-лист">
+                <svg class="button__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                    <path d="M263.72-96Q234-96 213-117.15T192-168v-624q0-29.7 21.15-50.85Q234.3-864 264-864h312l192 192v504q0 29.7-21.16 50.85Q725.68-96 695.96-96H263.72ZM528-624v-168H264v624h432v-456H528ZM264-792v189-189 624-624Z"/>
                 </svg>
-                <span class="button-text">Загрузить</span>
+                <span class="button__text">Загрузить</span>
             </button>
-            <button class="header-button" onclick="openPageInNewWindow()" title="В окне" aria-label="Открыть в отдельном окне">
-                <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#e3e3e3">
+            <button class="button button--header" data-action="popup" title="В окне" aria-label="Открыть в отдельном окне">
+                <svg class="button__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
                     <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H560v-80h280v280h-80v-144L388-332Z"/>
                 </svg>
-                <span class="button-text">В окне</span>
+                <span class="button__text">В окне</span>
             </button>
         </div>
+        <input type="file" id="file-input" class="hidden" accept=".json">
+    </header>
+
+    <!-- Основное содержимое -->
+    <main class="container">
+        <div id="checklist-container">
+            <div id="checklist-items" role="region" aria-label="Список задач"></div>
+        </div>
+    </main>
+
+    <!-- Модальные окна -->
+    <div id="delete-modal" class="modal">
+        <div class="modal__content">
+            <p class="modal__message">Вы уверены, что хотите удалить этот пункт?</p>
+            <div class="modal__buttons">
+                <button class="modal__button modal__button--confirm" data-modal-confirm="delete">Удалить</button>
+                <button class="modal__button modal__button--cancel" data-modal-close="delete-modal">Отмена</button>
+            </div>
+        </div>
     </div>
-    <div id="checklist-container">
-        <div id="checklist-items" role="region" aria-label="Список задач"></div>
+
+    <div id="warning-modal" class="modal">
+        <div class="modal__content">
+            <p class="modal__message">Нельзя превратить пункт с подпунктами в подпункт.</p>
+            <div class="modal__buttons">
+                <button class="modal__button modal__button--confirm" data-modal-close="warning-modal">ОК</button>
+            </div>
+        </div>
     </div>
-    
-    <!-- Добавляем контейнер для уведомлений -->
+
+    <div id="reset-modal" class="modal">
+        <div class="modal__content">
+            <p class="modal__message">Вы уверены, что хотите сбросить все отметки?</p>
+            <div class="modal__buttons">
+                <button class="modal__button modal__button--confirm" data-modal-confirm="reset">Сбросить</button>
+                <button class="modal__button modal__button--cancel" data-modal-close="reset-modal">Отмена</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="delete-subitem-modal" class="modal">
+        <div class="modal__content">
+            <p class="modal__message">Вы уверены, что хотите удалить этот подпункт?</p>
+            <div class="modal__buttons">
+                <button class="modal__button modal__button--confirm" data-modal-confirm="delete-subitem">Удалить</button>
+                <button class="modal__button modal__button--cancel" data-modal-close="delete-subitem-modal">Отмена</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Уведомления -->
     <div id="notification-container" aria-live="polite"></div>
-    
+
     <!-- Индикатор загрузки -->
-    <div id="loading-indicator" aria-hidden="true">
+    <div id="loading-indicator" class="hidden" aria-hidden="true">
         <div class="spinner"></div>
     </div>
 
-    <!-- Модальное окно для подтверждения удаления -->
-<div id="delete-modal" class="modal">
-    <div class="modal-content">
-        <p>Вы уверены, что хотите удалить этот пункт?</p>
-        <div class="modal-buttons">
-            <button class="modal-button confirm" onclick="handleDeleteConfirm()">Удалить</button>
-            <button class="modal-button cancel" onclick="closeModal('delete-modal')">Отмена</button>
-        </div>
-    </div>
-</div>
-
-<!-- Модальное окно для предупреждения -->
-<div id="warning-modal" class="modal">
-    <div class="modal-content">
-        <p>Нельзя превратить пункт с подпунктами в подпункт.</p>
-        <div class="modal-buttons">
-            <button class="modal-button confirm" onclick="closeModal('warning-modal')">ОК</button>
-        </div>
-    </div>
-</div>
-
-<!-- Модальное окно для ошибки загрузки файла -->
-<div id="error-modal" class="modal">
-    <div class="modal-content">
-        <p>Ошибка при загрузке файла. Неверный формат.</p>
-        <div class="modal-buttons">
-            <button class="modal-button confirm" onclick="closeModal('error-modal')">ОК</button>
-        </div>
-    </div>
-</div>
-
-<!-- Модальное окно для уведомления о блокировке всплывающих окон -->
-<div id="popup-blocked-modal" class="modal">
-    <div class="modal-content">
-        <p>Пожалуйста, разрешите открытие всплывающих окон для этого сайта.</p>
-        <div class="modal-buttons">
-            <button class="modal-button confirm" onclick="closeModal('popup-blocked-modal')">ОК</button>
-        </div>
-    </div>
-</div>
-
-<!-- Модальное окно для подтверждения сброса чек-листа -->
-<div id="reset-modal" class="modal">
-    <div class="modal-content">
-        <p>Вы уверены, что хотите сбросить все отметки?</p>
-        <div class="modal-buttons">
-            <button class="modal-button confirm" onclick="handleResetConfirm()">Сбросить</button>
-            <button class="modal-button cancel" onclick="closeModal('reset-modal')">Отмена</button>
-        </div>
-    </div>
-</div>
-
-<!-- Модальное окно для удаления подпункта -->
-<div id="delete-subitem-modal" class="modal">
-    <div class="modal-content">
-        <p>Вы уверены, что хотите удалить этот подпункт?</p>
-        <div class="modal-buttons">
-            <button class="modal-button confirm" onclick="handleDeleteSubItemConfirm()">Удалить</button>
-            <button class="modal-button cancel" onclick="closeModal('delete-subitem-modal')">Отмена</button>
-        </div>
-    </div>
-</div>
-
-    <script src="script.js"></script>
+    <!-- Подключение JavaScript -->
+    <script type="module" src="js/app.js"></script>
 </body>
 </html>
