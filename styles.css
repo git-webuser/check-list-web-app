@@ -21,7 +21,7 @@ body {
     justify-content: space-between;
     align-items: center;
     flex-wrap: nowrap; /* Предотвращаем перенос элементов */
-    gap: 10px;
+    gap: 8px;
     max-width: 100%;
     overflow: hidden;
     min-width: 0;
@@ -56,7 +56,7 @@ body {
 
 #header-buttons {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     margin-top: 0;
     flex-wrap: nowrap;
     flex-shrink: 0; /* Запрещаем сжатие блока с кнопками */
@@ -120,7 +120,7 @@ body {
 .item, .sub-item {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     padding: 10px;
     cursor: grab;
     position: relative;
@@ -177,7 +177,7 @@ body {
 
 .item .controls, .sub-item .controls {
     display: flex;
-    gap: 5px;
+    gap: 4px;
     opacity: 0;
     transition: opacity 0.2s ease;
     min-width: 0; /* Убираем минимальную ширину */
@@ -213,11 +213,6 @@ body {
 
 input[type="checkbox"] {
     display: none;
-    /*width: 20px;
-    height: 20px;
-    cursor: pointer;
-    margin: 3px 3px 3px 4px;
-    border-radius: 3px; /* Закругление самого чекбокса */
 }
 
 input[type="checkbox"]:indeterminate {
@@ -324,7 +319,7 @@ input[type="checkbox"]:indeterminate + .text {
 
 .modal-buttons {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     margin-top: 20px;
     justify-content: center;
 }
@@ -422,19 +417,56 @@ input[type="checkbox"]:indeterminate + .text {
 }
 
 @media print {
+    /* Скрываем кнопки в header */
+    #header-buttons {
+        display: none;
+    }
+
+    /* Настраиваем заголовок для печати */
+    #header-text {
+        white-space: normal !important;
+        text-overflow: clip !important;
+        overflow: visible !important;
+        max-width: 100% !important;
+        word-wrap: break-word !important;
+    }
+
+    #header-content {
+        overflow: visible !important;
+        text-overflow: clip !important;
+        white-space: normal !important;
+        max-width: 100% !important;
+    }
+
+    #header {
+        white-space: normal !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Скрываем элемент для добавления нового пункта */
+    .proto-item:last-child {
+        display: none !important;
+    }
+
+    /* Скрываем текст "Новый пункт" */
+    .text.placeholder {
+        display: none !important;
+    }
+
+    /* Скрываем другие ненужные элементы */
     .input-area {
         display: none;
     }
+
     .item .controls, .sub-item .controls {
         display: none;
     }
+
     .item input[type="checkbox"], .sub-item input[type="checkbox"] {
         display: none;
     }
-    .item::before, .sub-item::before {
-        content: "☐";
-        margin-right: 10px;
-    }
+
     .item .text, .sub-item .text {
         white-space: pre-wrap;
         word-wrap: break-word;
@@ -590,7 +622,7 @@ input[type="checkbox"].marked + .text {
     }
 
     #header-buttons {
-        gap: 10px;
+        gap: 8px;
     }
 
     .header-button svg {
@@ -642,7 +674,7 @@ input[type="checkbox"].marked + .text {
     }
 
     #header-buttons {
-        gap: 5px;
+        gap: 4px;
         margin-top: 0;
     }
 
@@ -664,7 +696,7 @@ input[type="checkbox"].marked + .text {
 
     .modal-buttons {
         flex-direction: column;
-        gap: 10px;
+        gap: 8px;
     }
 
     #checklist-container {
@@ -684,8 +716,8 @@ input[type="checkbox"].marked + .text {
     }
 
     .item .controls svg, .sub-item .controls svg {
-        width: 16px;
-        height: 16px;
+        width: 20px;
+        height: 20px;
     }
 
     .sub-item {
@@ -717,8 +749,8 @@ input[type="checkbox"].marked + .text {
     }
 
     .header-button svg {
-        width: 16px;
-        height: 16px;
+        width: 20px;
+        height: 20px;
     }
 
     .button-text {
@@ -748,8 +780,8 @@ input[type="checkbox"].marked + .text {
     }
 
     .item .controls svg, .sub-item .controls svg {
-        width: 16px;
-        height: 16px;
+        width: 20px;
+        height: 20px;
     }
 
     .sub-item {
